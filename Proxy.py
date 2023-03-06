@@ -12,11 +12,20 @@ def generate_text():
     n = data.get('n')
     stop = data.get('stop')
 
+    # extract the API key from the Authorization header
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'error': 'Missing Authorization header'}), 401
+    auth_header_parts = auth_header.split(' ')
+    if len(auth_header_parts) != 2 or auth_header_parts[0].lower() != 'bearer':
+        return jsonify({'error': 'Invalid Authorization header'}), 401
+    api_key = auth_header_parts[1]
+
     # call OpenAI's API
     url = "https://api.openai.com/v1/engine/davinci/completions"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer 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"
+        "Authorization": f"Bearer {api_key}"
     }
     payload = {
         "prompt": prompt,
